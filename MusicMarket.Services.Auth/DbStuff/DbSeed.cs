@@ -1,4 +1,5 @@
 ﻿using MusicMarket.Services.Auth.DbStuff.DbModels;
+using MusicMarket.Services.Auth.DbStuff.DbModels.Enums;
 
 namespace MusicMarket.Services.Auth.DbStuff
 {
@@ -18,7 +19,7 @@ namespace MusicMarket.Services.Auth.DbStuff
                     FirstName = "Alex",
                     LastName = "Admin",
                     Email = "Admin",
-                    Role = Enums.Role.Admin
+                    Roles = Roles.Admin
                 };
 
                 _webContext.Users.Add(userAdmin);

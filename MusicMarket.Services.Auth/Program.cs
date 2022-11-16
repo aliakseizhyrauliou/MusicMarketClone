@@ -3,10 +3,14 @@ using MusicMarket.Services.Auth.DbStuff;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MusicMarket.Services.Auth;
+using MusicMarket.Services.Auth.DbStuff.Repositories.IRepositories;
+using MusicMarket.Services.Auth.DbStuff.Repositories;
+using MusicMarket.Services.Auth.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -17,6 +21,8 @@ var connectString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MusicMa
 
 builder.Services.AddDbContext<WebContext>(options =>
     options.UseSqlServer(connectString));
+
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -35,7 +41,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddScoped<IDbSeed, DbSeed>();
 
+builder.RegisterAll();
+
+
 var app = builder.Build();
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var dbInitializer = scope.ServiceProvider.GetService<IDbSeed>();
+    dbInitializer.Initialize();
+
+}
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -49,14 +67,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
-
-using (var scope = scopeFactory.CreateScope())
-{
-    var dbInitializer = scope.ServiceProvider.GetService<IDbSeed>();
-    dbInitializer.Initialize();
-}
 
 app.MapControllers();
 
