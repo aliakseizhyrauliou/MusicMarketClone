@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using MusicMarket.Services.Auth;
 using MusicMarket.Services.Auth.DbStuff.Repositories.IRepositories;
 using MusicMarket.Services.Auth.DbStuff.Repositories;
-using MusicMarket.Services.Auth.DI;
+using MusicMarket.Services.Auth.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,13 +39,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddScoped<IDbSeed, DbSeed>();
-
-builder.RegisterAll();
-
+builder.Services.RegisterServices(builder.Configuration);
 
 var app = builder.Build();
 var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+
 using (var scope = scopeFactory.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<IDbSeed>();

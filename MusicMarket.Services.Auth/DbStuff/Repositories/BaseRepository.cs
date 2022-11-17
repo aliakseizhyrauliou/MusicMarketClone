@@ -6,9 +6,9 @@ namespace MusicMarket.Services.Auth.DbStuff.Repositories
 {
     public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseModel
     {
-        protected DbContext _dbContex;
+        protected WebContext _dbContex;
         protected DbSet<T> _dbSet;
-        public BaseRepository(DbContext dbContex)
+        public BaseRepository(WebContext dbContex)
         {
             _dbContex = dbContex;
             _dbSet = _dbContex.Set<T>();

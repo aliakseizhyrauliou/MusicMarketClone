@@ -1,12 +1,11 @@
-﻿using MusicMarket.Services.Auth.Attributes;
-using MusicMarket.Services.Auth.DbStuff.DbModels;
+﻿using MusicMarket.Services.Auth.DbStuff.DbModels;
 using MusicMarket.Services.Auth.DtoModels;
+using MusicMarket.Services.Auth.Services.Base;
 using System.Security.Claims;
 
 namespace MusicMarket.Services.Auth.Services.IServices
 {
-    [Service]
-    public interface ITokenService
+    public interface ITokenService : IScopedService
     {
 
         TokenDtoModel GenerateTokens(User candidateForTokens);

@@ -7,7 +7,7 @@ namespace MusicMarket.Services.Auth.DbStuff.Repositories
 {
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        public UserRepository(DbContext dbContex) : base(dbContex)
+        public UserRepository(WebContext dbContex) : base(dbContex)
         {
         }
 
