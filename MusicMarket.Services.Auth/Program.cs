@@ -6,6 +6,8 @@ using MusicMarket.Services.Auth;
 using MusicMarket.Services.Auth.DbStuff.Repositories.IRepositories;
 using MusicMarket.Services.Auth.DbStuff.Repositories;
 using MusicMarket.Services.Auth.Extentions;
+using AutoMapper;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"Enter 'Bearer' [space] and your token",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                },
+                Scheme="oauth2",
+                Name="Bearer",
+                In=ParameterLocation.Header
+            },
+            new List<string>()
+        }
+
+    });
+});
 
 var connectString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MusicMarket.Services.Auth;Integrated Security=True;";
 
@@ -39,7 +70,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.RegisterServices(builder.Configuration);
+builder.Services.RegisterServices(builder.Configuration);//Custom DI Container
+
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+
+builder.Services.AddSingleton(mapper);
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
@@ -61,6 +98,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 
