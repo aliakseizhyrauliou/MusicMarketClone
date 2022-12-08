@@ -13,41 +13,40 @@ namespace MusicMarket.Services.Auth.Controllers
 {
     [ApiController]
     //[Route("[controller]")]
+
     public class AuthController : ControllerBase
     {
-        private IUserRepository _userRepository;
-        private ITokenService _tokenService;
+        private ResponceDto responceDto;
         private IPasswordHashingService _passwordHashingService;
+        private ITokenService _tokenService;
+        private IUserRepository _userRepository;
         private IMapper _mapper;
-        public AuthController(IUserRepository userRepository,
+
+        public AuthController( 
+            IPasswordHashingService passwordHashingService, 
             ITokenService tokenService, 
-            IPasswordHashingService passwordHashingService,
+            IUserRepository userRepository,
             IMapper mapper)
         {
-            _userRepository = userRepository;
-            _tokenService = tokenService;
+            this.responceDto = new ResponceDto();
             _passwordHashingService = passwordHashingService;
+            _tokenService = tokenService;
+            _userRepository = userRepository;
             _mapper = mapper;
-        }
+        }       
 
-        [HttpGet]
-        [Route("/getUsers")]
-        [Authorize]
-        public async Task<IEnumerable<User>> GetUsers() 
-        {
-            var users = await _userRepository.GetAllAsync();
-            return users;
-        }
 
         [HttpPost]
         [Route("/register")]
-        public async Task<ActionResult<TokenDtoModel>> Register(RegisterViewModel registerViewModel)
+        public async Task<ResponceDto> Register(RegisterViewModel registerViewModel)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    responceDto.ErrorMessages.Add("Invalid data");
+                    responceDto.IsSuccess = false;
+                    return responceDto;
                 }
 
                 var salt = _passwordHashingService.GenerateSalt();
@@ -64,42 +63,81 @@ namespace MusicMarket.Services.Auth.Controllers
                 await _userRepository.SaveAsync(user);
 
                 var userTokens = _tokenService.GenerateTokens(user);
+                responceDto.Result = userTokens;
 
-                return Ok(userTokens);
+                return responceDto;
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                responceDto.ErrorMessages = new List<string>() { ex.Message };
+                responceDto.IsSuccess = false;
+                return responceDto;
             }
         }
 
         [HttpPost]
         [Route("/login")]
-        public async Task<ActionResult<TokenDtoModel>> Login(LoginViewModel loginViewModel)
+        public async Task<ResponceDto> Login(LoginViewModel loginViewModel)
         {
             try
             {
                 var candidate = await _userRepository.GetByEmailAsync(loginViewModel.Email);
                 if (candidate == null)
                 {
-                    return NotFound();
+                    responceDto.ErrorMessages = new List<string> { "User not found" };
+                    responceDto.IsSuccess = false;
+                    return responceDto;
                 }
 
                 if (_passwordHashingService.GetHashOfPassword(loginViewModel.Password, candidate.Salt) == candidate.PasswordHash)
                 {
                     var userTokens = _tokenService.GenerateTokens(candidate);
-                    return Ok(userTokens);
+                    responceDto.Result = userTokens;
+                    return responceDto;
                 }
 
-                return BadRequest();
+                responceDto.IsSuccess = false;
+                return responceDto;
 
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
-
+                responceDto.ErrorMessages = new List<string> { ex.Message };
+                responceDto.IsSuccess = false;
+                return responceDto;
             }
         }
-    }
 
+        [Authorize]
+        [HttpGet]
+        [Route("/refreshToken")]
+        public async Task<ResponceDto> RefreshToken(string refreshToken)
+        {
+            if (_tokenService.ValidateRefreshToken(refreshToken))
+            {
+                try
+                {
+                    var userId = int.Parse(User.Claims.FirstOrDefault(x => x.Type == "Id").Value);
+                    var candidate = await _userRepository.GetByIdAsync(userId);
+
+                    var userTokens = _tokenService.GenerateTokens(candidate);
+                    responceDto.Result = userTokens;
+                    return responceDto;
+
+
+                }
+                catch (Exception ex)
+                {
+                    responceDto.ErrorMessages = new List<string> { ex.Message };
+                    responceDto.IsSuccess = false;
+                    return responceDto;
+                }
+            }
+
+            responceDto.IsSuccess = false;
+            responceDto.ErrorMessages = new List<string> { "Invalid refresh_token" };
+            return responceDto;
+        }
+    }
 }
+
