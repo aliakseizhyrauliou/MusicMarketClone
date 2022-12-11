@@ -18,6 +18,9 @@ namespace MusicMarket.Services.Products.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -62,10 +65,16 @@ namespace MusicMarket.Services.Products.Migrations
             modelBuilder.Entity("MusicMarket.Services.Products.DbStuff.DbModels.Product", b =>
                 {
                     b.HasOne("MusicMarket.Services.Products.DbStuff.DbModels.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .WithMany("Product")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("MusicMarket.Services.Products.DbStuff.DbModels.Category", b =>
+                {
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,5 +4,7 @@ namespace MusicMarket.Services.Products.Repositories.IRepositories
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
+        Task<bool> IsExistAsync(Category category);
+
     }
 }

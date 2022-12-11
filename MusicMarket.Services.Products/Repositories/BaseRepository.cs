@@ -7,8 +7,8 @@ namespace MusicMarket.Services.Products.Repositories
 {
     public abstract class BaseRepository<T> : IBaseRepository<T> where T : BaseModel
     {
-        private readonly WebContext _webContext;
-        private readonly DbSet<T> _dbSet;
+        protected readonly WebContext _webContext;
+        protected readonly DbSet<T> _dbSet;
 
         public BaseRepository(WebContext context)
         {
@@ -17,10 +17,11 @@ namespace MusicMarket.Services.Products.Repositories
         }
 
 
-        public async void DeleteByIdAsync(long id)
+        public async Task DeleteByIdAsync(long id)
         {
             _dbSet.Remove(await GetByIdAsync(id));
             await _webContext.SaveChangesAsync();
+
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -30,9 +31,17 @@ namespace MusicMarket.Services.Products.Repositories
             => await _dbSet
                 .SingleOrDefaultAsync(x => x.Id == id);
 
-        public async Task<T> SaveAsync(T entity)
+        public async Task<T> SaveAsync(T entity) 
         {
-            await _dbSet.AddAsync(entity);
+            if (entity.Id > 0)
+            {
+                _dbSet.Update(entity);
+            }
+            else
+            {
+                await _dbSet.AddAsync(entity);
+            }
+
             await _webContext.SaveChangesAsync();
             return entity;
         }

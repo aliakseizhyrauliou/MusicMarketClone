@@ -1,4 +1,5 @@
 ﻿using MusicMarket.Services.Products.DbStuff.DbModels;
+using System.Linq.Expressions;
 
 namespace MusicMarket.Services.Products.Repositories.IRepositories
 {
@@ -8,7 +9,7 @@ namespace MusicMarket.Services.Products.Repositories.IRepositories
         Task<T> GetByIdAsync(long id);
         Task<T> SaveAsync(T entity);   
         Task SaveListAsync(IEnumerable<T> entities);
-        void DeleteByIdAsync(long id);
+        Task DeleteByIdAsync(long id);
         T Save(T entity);
     }
 }

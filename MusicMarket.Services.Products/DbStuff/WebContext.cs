@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MusicMarket.Services.Products.DbStuff.DbModels;
+using System.Reflection.Metadata;
 
 namespace MusicMarket.Services.Products.DbStuff
 {
@@ -10,8 +11,18 @@ namespace MusicMarket.Services.Products.DbStuff
 
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder
+                .Entity<Product>()
+                .HasOne(e => e.Category)
+                .WithMany(e => e.Product)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
 
