@@ -42,22 +42,21 @@ namespace MusicMarket.Services.Products.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create(ProductViewModel productViewModel)  //trying to save category entity that already exists
+        public async Task<IActionResult> CreateProduct(ProductViewModel productViewModel)  //trying to save category entity that already exists
         {
             if (ModelState.IsValid) 
             {
                 var dbModel = _mapper.Map<Product>(productViewModel);
+                var category = await _categoryRepository.GetByIdAsync(dbModel.Category.Id);
 
-                var type = dbModel.Category.GetType().Name;
-
-                if (!await _categoryRepository.IsExistAsync(_mapper.Map<Category>(dbModel.Category)))
+                if (category == null)
                 {
                     return BadRequest();
                 }
 
                 try
                 {
-
+                    dbModel.Category = category;
                     await _productRepository.SaveAsync(dbModel);
                 }
                 catch (Exception) 
@@ -74,7 +73,7 @@ namespace MusicMarket.Services.Products.Controllers
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Remove(long productId) 
+        public async Task<IActionResult> RemoveProduct(long productId) 
         {
             try
             {
@@ -91,20 +90,21 @@ namespace MusicMarket.Services.Products.Controllers
         [HttpPut]
         [Authorize(Roles = "Admin")]
 
-        public async Task<IActionResult> Update(ProductViewModel productViewModel) 
+        public async Task<IActionResult> UpdateProduct(ProductViewModel productViewModel) 
         {
             if (ModelState.IsValid) 
             {
                 var dbModel = _mapper.Map<Product>(productViewModel);
-                var type = dbModel.Category.GetType().Name;
+                var category = await _categoryRepository.GetByIdAsync(dbModel.Category.Id);
 
-                if (!await _categoryRepository.IsExistAsync(_mapper.Map<Category>(dbModel.Category))) 
+                if (category == null) 
                 {
                     return BadRequest();
                 }
 
                 try
                 {
+                    dbModel.Category = category;
                     await _productRepository.SaveAsync(dbModel);
                 }
                 catch (Exception) 
