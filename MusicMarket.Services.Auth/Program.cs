@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var connectString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MusicMarket.Services.Auth;Integrated Security=True;";
+var connectString = @"Server=mssql;Database=Auth;User=sa;Password=Secret1234;";
 
 builder.Services.AddDbContext<WebContext>(options =>
     options.UseSqlServer(connectString));
@@ -92,6 +92,10 @@ using (var scope = scopeFactory.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<IDbSeed>();
     dbInitializer.Initialize();
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<WebContext>();
+    dbContext.Database.Migrate();
+    
 
 }
 

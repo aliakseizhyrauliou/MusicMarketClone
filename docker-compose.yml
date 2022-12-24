@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+  auth: 
+    build: ./MusicMarket.Services.Auth
+    ports:
+      - '5555:5000'
+    restart: always
+    depends_on: 
+      - mssql
+  mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: mssql
+    volumes:
+      - 'data_volume:/var/opt/mssql'
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Secret1234
+    ports:
+      - '1433:1433' 
+
+volumes:
+  data_volume:

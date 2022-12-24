@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicMarket.Services.Auth", "MusicMarket.Services.Auth\MusicMarket.Services.Auth.csproj", "{32E5D3D3-FDA3-4B8A-B3F8-26F4B94AA5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMarket.Services.Products", "MusicMarket.Services.Products\MusicMarket.Services.Products.csproj", "{4453995C-FB43-48D6-90D1-7DCA24688C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicMarket.Services.Products", "MusicMarket.Services.Products\MusicMarket.Services.Products.csproj", "{4453995C-FB43-48D6-90D1-7DCA24688C6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicMarket.Services.Carts", "MusicMarket.Services.Carts\MusicMarket.Services.Carts.csproj", "{0279FE2C-9A8B-43B5-9A02-90810E26AB55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4453995C-FB43-48D6-90D1-7DCA24688C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4453995C-FB43-48D6-90D1-7DCA24688C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4453995C-FB43-48D6-90D1-7DCA24688C6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0279FE2C-9A8B-43B5-9A02-90810E26AB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0279FE2C-9A8B-43B5-9A02-90810E26AB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0279FE2C-9A8B-43B5-9A02-90810E26AB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0279FE2C-9A8B-43B5-9A02-90810E26AB55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
